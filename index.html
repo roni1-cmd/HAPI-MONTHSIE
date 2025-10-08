@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hapi Monthsie</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Poppins", Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f8f4ec;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .book {
+      position: relative;
+      width: 90%;
+      max-width: 500px;
+      background: #fff8ef;
+      border-radius: 16px;
+      box-shadow: 0 4px 25px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      transition: opacity 0.5s ease, transform 0.5s ease;
+      background: inherit;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .page::-webkit-scrollbar {
+      display: none;
+    }
+
+    .page.hidden {
+      opacity: 0;
+      transform: translateX(100%);
+      pointer-events: none;
+    }
+
+    .page.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: all;
+    }
+
+    .page-header {
+      font-weight: bold;
+      font-size: clamp(18px, 5vw, 24px);
+      text-align: center;
+      color: #5b4636;
+      margin-bottom: 10px;
+      flex-shrink: 0;
+    }
+
+    .page-image {
+      flex-shrink: 0;
+      height: 200px;
+      background-size: cover;
+      background-position: center;
+      border-radius: 10px;
+      margin: 10px 0;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-text {
+      flex: 1;
+      font-size: clamp(14px, 3vw, 16px);
+      color: #4a3c28;
+      line-height: 1.5;
+      text-align: justify;
+      overflow-y: auto;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    .page-text::-webkit-scrollbar {
+      display: none;
+    }
+
+    .controls {
+      margin-top: 15px;
+      display: flex;
+      justify-content: space-between;
+      width: 90%;
+      max-width: 500px;
+      flex-shrink: 0;
+      background: #f8f4ec;
+      padding-top: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #caa472;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      transition: background 0.3s, transform 0.2s;
+      flex: 1;
+      margin: 0 5px;
+    }
+
+    button:hover {
+      background: #b98b52;
+      transform: scale(1.03);
+    }
+
+    @media (max-width: 600px) {
+      .book {
+        height: 75vh;
+      }
+
+      .page-image {
+        height: 160px;
+      }
+
+      button {
+        font-size: 14px;
+        padding: 8px 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="book" id="book">
+    <div class="page active">
+      <div class="page-header">HAPI 3RD MONTHSIE TO US, BABU</div>
+      <div class="page-image" style="background-image: url('download.jpg');"></div>
+      <div class="page-text">
+        In a world where every moment is fleeting, there lived someone who cherished the little things. From the warmth of a morning sunbeam to the gentle rustle of leaves in the wind, they found joy in the simplest of pleasures.<br><br>
+        So ito na ang soft launch ko, mahal. As promised.<br><br>
+      </div>
+    </div>
+
+    <div class="page hidden">
+      <div class="page-header">Chapter 1</div>
+      <div class="page-image" style="background-image: url('download (1).jpg');"></div>
+      <div class="page-text">
+Who would've thought that our simple online encounter would lead us here? From strangers to lovers, now, something more. I want you to know how deeply grateful I am for you. Ang dami na nating pinagdaanan pala, mahal. Hindi ko talaga inasahan na 'yung mga gabing 'yon will define what we are today. All I wanted to do that time was to have fun and try to socialize with people that I don't know A.K.A. strangers. I had fun din that time, don't get me wrong. But it's different kind of fun. It's touching, it's beautiful, it's entertaining. I never expected you to come, but every second that time feels like a lifetime. Sobrang saya ko non because sabi ko "I found my people" and I did found my people and its you, mahal. You are the people, we both have the same traits and attributes that's why we clicked that well and I am so so so happy that I am talking to you that time. It was something I can brag about and it will always be something that I will brag for the rest of my life that even in the depths of the internet, I can still find genuine love. I am so happy, so so happy.<br><br>
+      </div>
+    </div>
+
+    <div class="page hidden">
+      <div class="page-header">Chapter 2</div>
+      <div class="page-image" style="background-image: url('download (2).jpg');"></div>
+      <div class="page-text">
+Days turned into weeks, and weeks into months. Alam mo, marami na rin tayong napagdaanan in our past months, specifically our first month, Why? We're still knowing each other. Pero ito ang hinding-hindi ko maipagkakaila, masaya ako. Because I get to know you more and more each day. I get to know your quirks, your habits, your likes and dislikes. I get to know the real you, and I love every bit of it. You make me laugh, you make me think, you make me feel alive. You are my sunshine on a cloudy day, my rock when I need support, my partner in crime when we go on adventures. I won't deny, our second was pretty rough sa 'ting dalawa kasi we're still testing the waters but we've made it through. Marami tayong pagsubok na pinagdaanang dalawa, challenging, yes. Bago pa tayo non e and we're learning, we're growing but as time passes, I can see that it paid off. Even at the worst days nating dalawa, I am still cherishing it. Why again? Because it made us the couple that we are today. I am so grateful for you, mahal. You are the best thing that ever happened to me, and I promise to cherish and love you always.<br><br>
+      </div>
+    </div>
+
+    <div class="page hidden">
+      <div class="page-header">Chapter 3</div>
+      <div class="page-image" style="background-image: url('etherealnoa.jpg');"></div>
+      <div class="page-text">
+And now, mahal. We reached our third month, I made this because ayaw kong wala kang matanggap from me on our third monthsary no kahit na delayed lang ng konti. I've witnessed us grow mahal in the span of those months. I've seen you cry, you've seen me cry. I've seen you at your lowest, you've seen me at my lowest. Challenges may occur, yes but again, we've made it through. I know we'll gonna go through a lot more challenges. But as long as I got you, as long as you got me, as long as we both hold each other's hands, it will all gonna be alright and we can do things together and with God. Hindi madali, I know, but I promise to make it worth it. We've both matured, mahal. And I hope we'll grow as the best we can be and build ourselves for each other. I want you to know how much you mean to me, and how much I appreciate everything you do for me. You are my rock, my support system, my best friend, and my soulmate. I am so grateful for your love and your presence in my life. I promise to always be there for you, to support you, to love you unconditionally, and to make you happy every day. Thank you for being the most amazing girlfriend in the world. I love you more than words can express, and I can't wait to see what the future holds for us. Happy third monthsary, mahal! Here's to many more months and years of love and happiness together.<br><br>
+      </div>
+    </div>
+
+    <div class="page hidden">
+      <div class="page-header">TO BE CONTINUED...</div>
+      <div class="page-image" style="background-image: url('https://picsum.photos/500/300?5');"></div>
+      <div class="page-text" style="text-align: center; font-style: italic; font-size: 18px; display: flex; align-items: center; justify-content: center;">
+        Our story doesn’t end here, mahal. This is just another chapter waiting to be written by us.
+      </div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button id="prev">Previous</button>
+    <button id="next">Next</button>
+  </div>
+
+  <audio id="background-music" loop>
+    <source src="Best Part - Daniel Caesar ft. H.E.R. (Acoustic Instrumental)-[AudioTrimmer.com].mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <script>
+    const pages = document.querySelectorAll(".page");
+    let current = 0;
+    const audio = document.getElementById("background-music");
+    let hasPlayed = false;
+
+    function showPage(index) {
+      pages.forEach((page, i) => {
+        page.classList.toggle("active", i === index);
+        page.classList.toggle("hidden", i !== index);
+      });
+    }
+
+    function playMusic() {
+      if (!hasPlayed) {
+        audio.play().catch(error => {
+          console.error("Error playing audio:", error);
+        });
+        hasPlayed = true;
+      }
+    }
+
+    document.getElementById("next").addEventListener("click", () => {
+      playMusic();
+      current = (current + 1) % pages.length;
+      showPage(current);
+    });
+
+    document.getElementById("prev").addEventListener("click", () => {
+      playMusic();
+      current = (current - 1 + pages.length) % pages.length;
+      showPage(current);
+    });
+
+    // Swipe support for mobile
+    let startX = 0;
+    document.getElementById("book").addEventListener("touchstart", (e) => {
+      startX = e.touches[0].clientX;
+    });
+
+    document.getElementById("book").addEventListener("touchend", (e) => {
+      const endX = e.changedTouches[0].clientX;
+      if (startX - endX > 50) {
+        playMusic();
+        current = (current + 1) % pages.length;
+        showPage(current);
+      } else if (endX - startX > 50) {
+        playMusic();
+        current = (current - 1 + pages.length) % pages.length;
+        showPage(current);
+      }
+    });
+  </script>
+</body>
+</html>
