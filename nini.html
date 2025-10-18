@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>for nini</title>
+<style>
+  :root{
+    --bg:#fff;
+    --card:#fff;
+    --text:#111;
+    --muted:#6b6b6b;
+    --accent:#ff7aa2;
+    --soft:#faf5f7;
+  }
+  html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;}
+  .wrap{max-width:760px;margin:28px auto;padding:22px;}
+  header{margin-bottom:18px}
+  .title{font-weight:700;font-size:18px;margin:0 0 6px;}
+  .sub{color:var(--muted);margin:0 0 18px;font-size:14px;}
+  .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 14px 30px rgba(0,0,0,0.06);}
+  .poem{white-space:pre-wrap;line-height:1.7;font-size:16px;color:var(--text);margin-bottom:18px;}
+  .note{color:var(--muted);font-size:14px;margin-bottom:12px;}
+  .unlock {
+    display:flex;
+    gap:10px;
+    align-items:center;
+    margin-top:8px;
+    flex-wrap:wrap;
+  }
+  input[type="text"]{
+    padding:10px 12px;border-radius:10px;border:1px solid #eee;font-size:15px;flex:1;min-width:160px;
+  }
+  button{
+    background:var(--accent);color:#fff;border:0;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;
+  }
+  .message{font-size:14px;color:var(--muted);margin-top:10px;}
+  .secret{margin-top:18px;padding:16px;border-radius:10px;background:var(--soft);line-height:1.75;display:none;white-space:pre-wrap;font-size:15px;color:var(--text);}
+  .reveal{display:block;}
+  .hint{font-size:13px;color:#888;margin-top:10px}
+  footer{margin-top:18px;color:#999;font-size:13px}
+  @media (max-width:420px){
+    .poem{font-size:15px}
+    input[type="text"]{font-size:14px}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="title">for nini</div>
+      <div class="sub">₊✩‧₊˚౨ৎ˚₊✩‧₊</div>
+    </header>
+
+
+      <div class="note">;)</div>
+
+      <div class="unlock" aria-hidden="false">
+        <input id="keyInput" type="text" placeholder="type..." autocomplete="off" />
+        <button id="unlockBtn">unlock</button>
+      </div>
+
+      <div class="message" id="msg">hint: try your favorite phrase (case and spacing don't matter).</div>
+
+      <div id="secret" class="secret" aria-hidden="true">
+hi, babyyyyyyyy koo ⠀
+⠀⠀ ⠀⠀ ⠀⠀ ⠀⠀ ⠀⠀ ⠀⠀ ⠀⠀:¨ ·.· ¨:
+⠀⠀ ⠀⠀ ⠀⠀ ⠀⠀ ⠀⠀ ⠀⠀ ⠀⠀ `· . 𐙚,
+
+alam mo, mahal. sobrang bilib na talaga ako sa 'yo kapag nakita mo 'to. this is so impressive kasi nakukuha mo agad mga hints na pinapahanap ko but it's not like it's hard for you naman kasi lahat ng 'to is just all for you and galing sa 'yo rin 'tong mga napupulot ko like about sa favorite foods mo, favorite animals, favorite color and phrase, etc. wala, ang cute lang kasi whenever i think about it, i always end up smiling asjdjasd wala lang. nacucutan talaga ako.
+
+in my every mornings, ikaw naiisip ko, mahal. ikaw ang unang laman ng isip ko pag gising ko. at sa gabi naman, ikaw pa rin ang huling iniisip ko bago ako matulog. kasi ikaw ang dahilan kung bakit masaya ang bawat araw ko. ikaw ang nagbibigay kulay sa buhay ko, nini. at gusto kong malaman mo na sobrang thankful ako na nandiyan ka palagi para sa akin. and diba sabi mo kanina na you want your compliments to be really well thought? say less, i have tons and tons of words to say pero i feel like hindi 'to tutumbas sa kung gaano ka talaga kaganda.
+
+you remind me of twilight — that rare hour when the sky can’t decide if it wants to stay or fade. the world slows down then, like it’s holding its breath, watching something too delicate to interrupt. that’s how you are to me. there’s something in the way your presence fills the room — not loud, not showy, but impossible to ignore. you’re that quiet kind of beautiful that seeps in slowly, until it becomes part of everything around you.
+
+you’re beauty that can’t be captured. not by a camera, not by words. even the stars would stutter trying to name you. you’re the kind of beautiful that doesn’t just exist — it happens. like rain that starts soft then suddenly turns the world silver. like the way light hits glass and turns it into something alive.
+
+you are the definition of quiet chaos — soft edges that still manage to break me apart. and i wouldn’t change a thing. because to me, your beauty isn’t something to be seen. it’s something to be understood.
+
+asjdasd ayan, pinag-isipan ko talaga 'yan kanina heheheh masaya ako na nasshare ko ang mga ganitong bagay sa 'yo that's why i also keep doing them. mahal kita, nini. and i always will.
+
+hanggang dito na lang muna,
+🦊 ⋆˚꩜.ᐟ 
+</div>
+
+    </div>
+
+  </div>
+
+<script>
+(function(){
+  const secretEl = document.getElementById('secret');
+  const keyInput = document.getElementById('keyInput');
+  const unlockBtn = document.getElementById('unlockBtn');
+  const msg = document.getElementById('msg');
+
+  // Accept 'sun conure' with or without space, any case
+  function normalize(s){
+    return (s||'').toString().replace(/\s+/g,'').toLowerCase();
+  }
+  const valid = 'sunconure';
+
+  function showSecret(){
+    secretEl.classList.add('reveal');
+    secretEl.setAttribute('aria-hidden','false');
+    // scroll into view on mobile
+    setTimeout(()=> secretEl.scrollIntoView({behavior:'smooth', block:'center'}), 150);
+    msg.textContent = 'you unlocked the letter — read slowly.';
+  }
+
+  unlockBtn.addEventListener('click', function(){
+    const val = normalize(keyInput.value);
+    if(!val){
+      msg.textContent = 'type the key you think matches the poem.';
+      return;
+    }
+    if(val === valid){
+      showSecret();
+    } else {
+      msg.textContent = 'not quite — listen to your heart and the poem again.';
+      unlockBtn.animate([{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:220});
+    }
+  });
+
+  keyInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){ unlockBtn.click(); }
+  });
+})();
+</script>
+</body>
+</html>
