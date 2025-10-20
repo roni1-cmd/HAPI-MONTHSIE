@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>LSB Steganography Decoder</title>
+<style>
+  body {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    max-width: 980px;
+    margin: 28px auto;
+    padding: 0 18px;
+    color: #111;
+    background: #fff;
+  }
+
+  h1 {
+    margin: 0 0 6px;
+    font-size: 1.8rem;
+  }
+
+  p {
+    margin: 4px 0 20px;
+  }
+
+  .row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+  }
+
+  label {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  input[type="file"] {
+    display: block;
+    width: 100%;
+  }
+
+  .drop {
+    border: 2px dashed #bbb;
+    padding: 18px;
+    border-radius: 8px;
+    text-align: center;
+    color: #666;
+    transition: border-color 0.2s, background 0.2s;
+  }
+
+  .drop:hover {
+    border-color: #888;
+    background: #fafafa;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 140px;
+    padding: 10px;
+    font-family: monospace;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    resize: vertical;
+  }
+
+  button {
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: none;
+    background: #ff4081;
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  button:hover {
+    background: #e73370;
+  }
+
+  button:active {
+    transform: scale(0.98);
+  }
+
+  button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  small {
+    color: #666;
+  }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .result {
+    margin-top: 16px;
+  }
+
+  .meta {
+    margin-top: 6px;
+    color: #444;
+    font-size: 0.9rem;
+  }
+
+  pre {
+    background: #fafafa;
+    padding: 8px;
+    border-radius: 6px;
+    overflow: auto;
+    word-wrap: break-word;
+    font-size: 0.9rem;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 600px) {
+    body {
+      padding: 0 12px;
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      text-align: center;
+    }
+
+    .row {
+      flex-direction: column;
+    }
+
+    .controls {
+      flex-direction: row;
+      justify-content: flex-start;
+    }
+
+    button {
+      width: 100%;
+    }
+
+    .meta, .result h3 {
+      text-align: center;
+    }
+
+    #drop {
+      padding: 24px;
+      font-size: 0.95rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <h1>LSB STG Decoder</h1>
+  <p>hii, nini. i hope you know why you're here</p>
+
+  <div class="row">
+    <div style="flex:1 1 360px">
+      <input id="fileInput" type="file" accept="image/*">
+      <div id="drop" class="drop" style="margin-top:8px">or drag & drop image here</div>
+      <canvas id="c" style="display:none"></canvas>
+    </div>
+
+    <div style="flex:1 1 320px">
+      <div class="controls">
+        <label>LSB
+          <select id="lsbCount">
+            <option>1</option><option>2</option><option>3</option><option>4</option>
+          </select>
+        </label>
+
+        <label><input type="checkbox" id="chR" checked>R</label>
+        <label><input type="checkbox" id="chG" checked>G</label>
+        <label><input type="checkbox" id="chB" checked>B</label>
+        <label><input type="checkbox" id="chA">A</label>
+      </div>
+
+      <div style="margin-top:8px">
+        <label><input type="checkbox" id="useLength">Force: first 32 bits = payload length (bytes)</label>
+        <div class="meta"><label><input type="checkbox" id="autoDetect" checked>Auto-detect header validity (recommended)</label></div>
+        <div class="meta"><small>If auto-detect is on, the decoder will ignore an absurd length header and fall back to null-terminated reading.</small></div>
+      </div>
+
+      <div style="margin-top:12px" class="controls">
+        <button id="decodeBtn">Decode</button>
+        <button id="clearBtn" style="background:#ccc;color:#111;">Clear</button>
+      </div>
+
+      <div class="meta" id="imageMeta"></div>
+      <div class="meta" id="status" style="margin-top:6px;color:#666"></div>
+    </div>
+  </div>
+
+  <div class="result">
+    <h3>Decoded output</h3>
+    <textarea id="out" placeholder="Decoded text will appear here"></textarea>
+    <div style="margin-top:8px" class="controls">
+      <button id="downloadBtn" disabled>Download raw payload</button>
+      <button id="showHexBtn" style="background:#f8bbd0;color:#111;">Toggle hex</button>
+      <span id="bytesInfo" style="margin-left:12px;color:#666"></span>
+    </div>
+    <pre id="hexOut" style="display:none"></pre>
+  </div>
+
+<script>
+const fileInput = document.getElementById('fileInput');
+const drop = document.getElementById('drop');
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const lsbCountEl = document.getElementById('lsbCount');
+const chR = document.getElementById('chR');
+const chG = document.getElementById('chG');
+const chB = document.getElementById('chB');
+const chA = document.getElementById('chA');
+const useLength = document.getElementById('useLength');
+const autoDetect = document.getElementById('autoDetect');
+const decodeBtn = document.getElementById('decodeBtn');
+const clearBtn = document.getElementById('clearBtn');
+const out = document.getElementById('out');
+const downloadBtn = document.getElementById('downloadBtn');
+const status = document.getElementById('status');
+const imageMeta = document.getElementById('imageMeta');
+const showHexBtn = document.getElementById('showHexBtn');
+const hexOut = document.getElementById('hexOut');
+const bytesInfo = document.getElementById('bytesInfo');
+
+let loadedImage = null;
+let lastPayload = null;
+
+function setStatus(s){ status.textContent = s || ''; }
+
+function handleFile(file){
+  if(!file) return;
+  const img = new Image();
+  img.onload = () => {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
+    loadedImage = img;
+    imageMeta.innerHTML = `Image: ${img.width}×${img.height} — ${Math.round(img.width*img.height)} px`;
+    setStatus('Image loaded.');
+  };
+  img.onerror = e => {
+    setStatus('Could not load image.'); console.error(e);
+  };
+  const reader = new FileReader();
+  reader.onload = e => img.src = e.target.result;
+  reader.readAsDataURL(file);
+}
+
+drop.addEventListener('dragover', e => { e.preventDefault(); drop.style.borderColor='#888'; });
+drop.addEventListener('dragleave', e => { drop.style.borderColor='#bbb'; });
+drop.addEventListener('drop', e => {
+  e.preventDefault(); drop.style.borderColor='#bbb';
+  const f = e.dataTransfer.files && e.dataTransfer.files[0];
+  if(f) handleFile(f);
+});
+fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+
+decodeBtn.addEventListener('click', () => {
+  setStatus('');
+  bytesInfo.textContent = '';
+  if(!loadedImage){ setStatus('Load an image first.'); return; }
+  try {
+    const imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+    const payload = safeExtractLSBPayload(imgData,
+      parseInt(lsbCountEl.value,10),
+      {r:chR.checked,g:chG.checked,b:chB.checked,a:chA.checked},
+      useLength.checked,
+      autoDetect.checked
+    );
+    lastPayload = payload;
+    if(!payload || payload.length===0){ out.value = ''; setStatus('No payload found or payload empty.'); downloadBtn.disabled=true; hexOut.style.display='none'; return; }
+    out.value = tryDecodeText(payload);
+    bytesInfo.textContent = `${payload.length} bytes decoded`;
+    downloadBtn.disabled = false;
+    hexOut.style.display = 'none';
+    setStatus('Done.');
+  } catch(err){
+    console.error(err);
+    setStatus('Error: ' + (err && err.message ? err.message : String(err)));
+  }
+});
+
+clearBtn.addEventListener('click', () => {
+  loadedImage = null;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  out.value=''; lastPayload=null; downloadBtn.disabled=true; imageMeta.innerHTML=''; hexOut.style.display='none'; bytesInfo.textContent=''; setStatus('');
+});
+
+downloadBtn.addEventListener('click', () => {
+  if(!lastPayload) return;
+  const blob = new Blob([lastPayload]);
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'payload.bin';
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+showHexBtn.addEventListener('click', () => {
+  if(!lastPayload){ setStatus('No payload.'); return; }
+  const hex = Array.from(new Uint8Array(lastPayload)).map(b => ('0'+b.toString(16)).slice(-2)).join(' ');
+  hexOut.textContent = hex;
+  hexOut.style.display = hexOut.style.display === 'none' ? 'block' : 'none';
+});
+
+function tryDecodeText(uint8arr){
+  try {
+    const dec = new TextDecoder('utf-8', {fatal:false});
+    return dec.decode(uint8arr);
+  } catch(e){
+    return String.fromCharCode.apply(null, Array.from(uint8arr));
+  }
+}
+
+// Same safe extraction logic
+function safeExtractLSBPayload(imageData, lsbCount, channels, forceHeader, tryAutoDetect){
+  if(lsbCount < 1 || lsbCount > 8) throw new Error('lsbCount must be 1..8');
+  const data = imageData.data;
+  const channelIndices = [];
+  if(channels.r) channelIndices.push(0);
+  if(channels.g) channelIndices.push(1);
+  if(channels.b) channelIndices.push(2);
+  if(channels.a) channelIndices.push(3);
+  if(channelIndices.length === 0) throw new Error('Select at least one channel.');
+
+  const bitsPerPixel = channelIndices.length * lsbCount;
+  const totalBits = Math.floor((data.length / 4) * bitsPerPixel);
+  const bitArr = new Uint8Array(totalBits);
+  let bitPos = 0;
+
+  for(let i=0; i<data.length; i+=4){
+    for(const ch of channelIndices){
+      const val = data[i+ch];
+      for(let b=0;b<lsbCount;b++){
+        if(bitPos>=totalBits) break;
+        bitArr[bitPos++] = (val >> b) & 1;
+      }
+    }
+  }
+
+  let readPtr = 0;
+  const bitsLeft = () => bitArr.length - readPtr;
+  const readBit = () => (readPtr < bitArr.length ? bitArr[readPtr++] : undefined);
+
+  const readBitsAsNumber = n => {
+    if(bitsLeft() < n) return null;
+    let v=0;
+    for(let i=0;i<n;i++) v=(v<<1)|readBit();
+    return v>>>0;
+  };
+
+  const readByte = () => {
+    if(bitsLeft() < 8) return null;
+    let b=0;
+    for(let i=0;i<8;i++) b=(b<<1)|readBit();
+    return b&0xFF;
+  };
+
+  const attemptHeader = () => {
+    const startPtr=readPtr;
+    const header=readBitsAsNumber(32);
+    if(header===null) return {valid:false,header:0};
+    const maxAvailableBytes=Math.floor(bitsLeft()/8);
+    const ABSOLUTE_MAX=100*1024*1024;
+    if(header===0||header>maxAvailableBytes||header>ABSOLUTE_MAX){
+      readPtr=startPtr;
+      return {valid:false,header};
+    }
+    return {valid:true,header};
+  };
+
+  if(forceHeader){
+    const h=attemptHeader();
+    if(!h.valid){
+      if(tryAutoDetect)return readNullTerminated();
+      const maxB=Math.floor(bitsLeft()/8);
+      return readBytes(maxB);
+    } else return readBytes(h.header);
+  } else {
+    if(tryAutoDetect){
+      const h=attemptHeader();
+      if(h.valid)return readBytes(h.header);
+      return readNullTerminated();
+    } else return readNullTerminated();
+  }
+
+  function readBytes(n){
+    const bytes=new Uint8Array(n);
+    for(let i=0;i<n;i++){
+      const b=readByte();
+      if(b===null)return bytes.subarray(0,i);
+      bytes[i]=b;
+    }
+    return bytes;
+  }
+
+  function readNullTerminated(){
+    const out=[];
+    while(true){
+      const b=readByte();
+      if(b===null||b===0x00)break;
+      out.push(b);
+    }
+    return new Uint8Array(out);
+  }
+}
+</script>
+</body>
+</html>
